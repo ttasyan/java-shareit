@@ -19,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
+    private static Long currentId = 1L;
     private final Map<Long, List<Item>> items = new HashMap<>();
 
     public ItemDto addItem(long userId, ItemDto itemDto) {
@@ -29,10 +30,11 @@ public class ItemServiceImpl implements ItemService {
             throw new InternalServerException("Имя или описание не указано");
         }
         Item item = ItemMapper.fromItemDto(itemDto);
+        item.setId(currentId++);
         List<Item> userItems = items.getOrDefault(userId, new ArrayList<>());
         userItems.add(item);
         items.put(userId, userItems);
-        log.info("Вещь с id {} добавлена", itemDto.getId());
+        log.info("Вещь с id {} добавлена", item.getId());
         return ItemMapper.toItemDto(item);
 
     }
@@ -57,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         items.put(userId, userItems);
-        log.info("Вещь с id {} обновлена", itemDto.getId());
+        log.info("Вещь с id {} обновлена", item.getId());
         return ItemMapper.toItemDto(item);
     }
 

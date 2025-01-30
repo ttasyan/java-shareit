@@ -11,6 +11,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+    private static Long currentId = 1L;
     private final Map<Long, User> users = new HashMap<>();
 
     public UserDto addUser(UserDto userDto) {
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService {
         }
         emailDuplicate(userDto);
         User user = UserMapper.fromUserDto(userDto);
+        user.setId(currentId++);
         users.put(user.getId(), user);
         log.info("Юзер с id {} добавлен", user.getId());
         return UserMapper.toUserDto(user);
