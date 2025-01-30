@@ -11,7 +11,7 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private static Long currentId = 1L;
+    private Long currentId = 1L;
     private final Map<Long, User> users = new HashMap<>();
 
     public UserDto addUser(UserDto userDto) {

@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
-    private static Long currentId = 1L;
+    private Long currentId = 1L;
     private final Map<Long, List<Item>> items = new HashMap<>();
 
     public ItemDto addItem(long userId, ItemDto itemDto) {
