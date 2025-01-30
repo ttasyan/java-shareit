@@ -11,8 +11,6 @@ import java.util.Map;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-    private final UserMapper userMapper = new UserMapper();
-    private Long currentId = 1L;
     private final Map<Long, User> users = new HashMap<>();
 
     public UserDto addUser(UserDto userDto) {
@@ -21,10 +19,10 @@ public class UserServiceImpl implements UserService {
             throw new InternalServerException("Отсутствует email");
         }
         emailDuplicate(userDto);
-        User user = new User(currentId++, userDto.getName(), userDto.getEmail());
+        User user = UserMapper.fromUserDto(userDto);
         users.put(user.getId(), user);
         log.info("Юзер с id {} добавлен", user.getId());
-        return userMapper.toUserDto(user);
+        return UserMapper.toUserDto(user);
     }
 
     public UserDto updateUser(long userId, UserDto userDto) {
@@ -37,7 +35,7 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
         log.info("Юзер с id {} обновлен", user.getId());
-        return userMapper.toUserDto(user);
+        return UserMapper.toUserDto(user);
 
 
     }
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
             log.error("Юзер не найден");
             throw new NotFoundException("Юзер не найден");
         }
-        return userMapper.toUserDto(users.get(userId));
+        return UserMapper.toUserDto(users.get(userId));
     }
 
     public void deleteUser(long userId) {
@@ -56,8 +54,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private void emailDuplicate(UserDto userDto) {
-        if (!users.entrySet().stream()
-                .filter(user1 -> user1.getValue().getEmail().equals(userDto.getEmail())).toList().isEmpty()) {
+        if (!users.values().stream()
+                .filter(user1 -> user1.getEmail().equals(userDto.getEmail())).toList().isEmpty()) {
             log.error("Email {} уже используется", userDto.getEmail());
             throw new InternalServerException("Email уже используется");
         }

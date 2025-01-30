@@ -19,8 +19,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
-    private final ItemMapper itemMapper = new ItemMapper();
-    private Long currentId = 1L;
     private final Map<Long, List<Item>> items = new HashMap<>();
 
     public ItemDto addItem(long userId, ItemDto itemDto) {
@@ -30,13 +28,12 @@ public class ItemServiceImpl implements ItemService {
             log.error("Имя или описание не указано");
             throw new InternalServerException("Имя или описание не указано");
         }
-        Item item = new Item(currentId++, itemDto.getName(),
-                itemDto.getDescription(), itemDto.getAvailable());
+        Item item = ItemMapper.fromItemDto(itemDto);
         List<Item> userItems = items.getOrDefault(userId, new ArrayList<>());
         userItems.add(item);
         items.put(userId, userItems);
         log.info("Вещь с id {} добавлена", itemDto.getId());
-        return itemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(item);
 
     }
 
@@ -61,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
 
         items.put(userId, userItems);
         log.info("Вещь с id {} обновлена", itemDto.getId());
-        return itemMapper.toItemDto(item);
+        return ItemMapper.toItemDto(item);
     }
 
     public ItemDto getItemById(long userId, long itemId) {
@@ -71,14 +68,14 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Вещь не найдена");
         }
         return items.get(userId).stream().filter(item -> item.getId() == itemId)
-                .findFirst().map(itemMapper::toItemDto)
+                .findFirst().map(ItemMapper::toItemDto)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
     }
 
     public List<ItemDto> getAllItems(long userId) {
         return items.getOrDefault(userId, new ArrayList<>()).stream()
-                .map(itemMapper::toItemDto).toList();
+                .map(ItemMapper::toItemDto).toList();
     }
 
     public List<ItemDto> search(String text) {
@@ -90,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
                 .filter(Item::isAvailable)
                 .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase()) ||
                         item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                .map(itemMapper::toItemDto)
+                .map(ItemMapper::toItemDto)
                 .toList();
     }
 }
