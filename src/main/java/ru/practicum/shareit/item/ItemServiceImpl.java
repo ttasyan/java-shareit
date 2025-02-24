@@ -14,7 +14,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final UserService userService;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
@@ -66,77 +64,78 @@ public class ItemServiceImpl implements ItemService {
             item.setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {
-                item.setAvailable(itemDto.getAvailable());
-            }
-
-            log.info("Вещь с id {} обновлена", item.getId());
-            return ItemMapper.toItemDto(itemRepository.save(item));
+            item.setAvailable(itemDto.getAvailable());
         }
 
-        @Override
-        public ItemDto getItemById(long userId, long itemId) {
-            List<Item> userItems = itemRepository.findByOwnerId(userId);
-            if (userItems == null) {
-                log.error("Вещь с id {} не найдена", itemId);
-                throw new NotFoundException("Вещь не найдена");
-            }
-
-            Sort sort = Sort.by(Sort.Direction.ASC, "start");
-            Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
-            if (!bookingRepository.findByBookerId(userId).isEmpty()) {
-                bookingRepository.findByItemId(itemId, sort).stream()
-                        .filter(booking -> booking.getItem().equals(item))
-                        .findFirst()
-                        .ifPresent(booking -> {
-                                    if (booking.getStart().isAfter(LocalDateTime.now()) && item.getNextBooking() == null) {
-                                        item.setNextBooking(booking.getStart());
-
-                                    }
-                                    if (booking.getEnd().isAfter(LocalDateTime.now())) {
-                                        item.setLastBooking(booking.getEnd());
-
-                                    }
-                                }
-                        );
-            }
-
-            List<Comment> comments = commentRepository.findByItemId(itemId);
-            return ItemMapper.toItemDtoWithComments(item, comments);
-
-        }
-
-        @Override
-        public List<ItemDto> getAllItems(long userId) {
-            userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-            return itemRepository.findByOwnerId(userId).stream()
-                    .map(ItemMapper::toItemDto).toList();
-        }
-
-        @Override
-        public List<ItemDto> search(String text) {
-            if (text.isEmpty() || text.isBlank()) {
-                return new ArrayList<>();
-            }
-            return itemRepository.findAllByText(text).stream()
-                    .filter(Item::isAvailable)
-                    .map(ItemMapper::toItemDto)
-                    .toList();
-        }
-
-        @Override
-        public CommentDto comment(long userId, long itemId, NewCommentRequest request) {
-            User author = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-            Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
-
-            Sort sort = Sort.by(Sort.Direction.ASC, "start");
-            boolean hasBooking = bookingRepository.findByItemId(itemId, sort).stream()
-                    .anyMatch(booking -> userId == booking.getBooker().getId() && booking.getEnd().isBefore(LocalDateTime.now()));
-            if (!hasBooking) {
-                throw new ValidationException("Пользователь не может оставить комментарий");
-            }
-            Comment comment = CommentMapper.fromCommentRequest(request, author, item);
-
-            return CommentMapper.toCommentDto(commentRepository.save(comment));
-        }
+        log.info("Вещь с id {} обновлена", item.getId());
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
+
+    @Override
+    public ItemDto getItemById(long userId, long itemId) {
+        List<Item> userItems = itemRepository.findByOwnerId(userId);
+        if (userItems == null) {
+            log.error("Вещь с id {} не найдена", itemId);
+            throw new NotFoundException("Вещь не найдена");
+        }
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "start");
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
+        if (!bookingRepository.findByBookerId(userId).isEmpty()) {
+            bookingRepository.findByItemId(itemId, sort).stream()
+                    .filter(booking -> booking.getItem().equals(item))
+                    .findFirst()
+                    .ifPresent(booking -> {
+                                if (booking.getStart().isAfter(LocalDateTime.now()) && item.getNextBooking() == null) {
+                                    item.setNextBooking(booking.getStart());
+
+                                }
+                                if (booking.getEnd().isAfter(LocalDateTime.now())) {
+                                    item.setLastBooking(booking.getEnd());
+
+                                }
+                            }
+                    );
+        }
+        return ItemMapper.toItemDtoWithComments(item, List.of(new Comment(0, "new", item, user, LocalDateTime.now())));
+
+    }
+
+    @Override
+    public List<ItemDto> getAllItems(long userId) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        return itemRepository.findByOwnerId(userId).stream()
+                .map(ItemMapper::toItemDto).toList();
+    }
+
+    @Override
+    public List<ItemDto> search(String text) {
+        if (text.isEmpty() || text.isBlank()) {
+            return new ArrayList<>();
+        }
+        return itemRepository.findAllByText(text).stream()
+                .filter(Item::isAvailable)
+                .map(ItemMapper::toItemDto)
+                .toList();
+    }
+
+    @Override
+    public CommentDto comment(long userId, long itemId, NewCommentRequest request) {
+        log.info("Начинаем добавлять комментарий");
+        User author = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "start");
+        boolean hasBooking = bookingRepository.findByItemId(itemId, sort).stream()
+                .anyMatch(booking -> userId == booking.getBooker().getId() && booking.getEnd().isBefore(LocalDateTime.now()));
+        if (!hasBooking) {
+            throw new ValidationException("Пользователь не может оставить комментарий");
+        }
+        Comment comment = CommentMapper.fromCommentRequest(request, author, item);
+        commentRepository.save(comment);
+        log.info("Комментарий добавлен к вещи с айди{}", itemId);
+        return CommentMapper.toCommentDto(comment);
+    }
+}
