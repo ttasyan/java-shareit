@@ -13,6 +13,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 public class UserServiceImpl implements UserService {
     private Long currentId = 1L;
     private final UserRepository userRepository;
+
     @Override
     public UserDto addUser(UserDto userDto) {
         if (userDto.getEmail().isEmpty() || userDto.getEmail().isBlank()) {
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
         log.info("Юзер с id {} добавлен", user.getId());
         return UserMapper.toUserDto(userRepository.save(user));
     }
+
     @Override
     public UserDto updateUser(long userId, UserDto userDto) {
         emailDuplicate(userDto);
@@ -40,10 +42,12 @@ public class UserServiceImpl implements UserService {
 
 
     }
+
     @Override
     public UserDto getUserById(long userId) {
         return UserMapper.toUserDto(userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found")));
     }
+
     @Override
     public void deleteUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
