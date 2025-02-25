@@ -27,7 +27,6 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private Long currentId = 1L;
 
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
@@ -39,7 +38,6 @@ public class ItemServiceImpl implements ItemService {
             throw new InternalServerException("Имя или описание не указано");
         }
         Item item = ItemMapper.fromItemDto(itemDto);
-        item.setId(currentId++);
         item.setOwner(user);
         item.setLastBooking(null);
         item.setNextBooking(null);
@@ -98,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
                             }
                     );
         }
-        return ItemMapper.toItemDtoWithComments(item, List.of(new Comment(0, "new", item, user, LocalDateTime.now())));
+        return ItemMapper.toItemDtoWithComments(item, commentRepository.findAll());
 
     }
 

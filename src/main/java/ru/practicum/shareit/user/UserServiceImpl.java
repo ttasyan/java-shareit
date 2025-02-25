@@ -11,7 +11,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private Long currentId = 1L;
     private final UserRepository userRepository;
 
     @Override
@@ -22,7 +21,6 @@ public class UserServiceImpl implements UserService {
         }
         emailDuplicate(userDto);
         User user = UserMapper.fromUserDto(userDto);
-        user.setId(currentId++);
         log.info("Юзер с id {} добавлен", user.getId());
         return UserMapper.toUserDto(userRepository.save(user));
     }

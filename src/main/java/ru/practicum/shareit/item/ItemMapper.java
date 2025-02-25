@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
- class ItemMapper {
+public class ItemMapper {
 
     public static ItemDto toItemDtoWithComments(Item item, List<Comment> comments) {
         return new ItemDto(
