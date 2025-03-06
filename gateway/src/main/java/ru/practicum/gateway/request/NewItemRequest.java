@@ -1,5 +1,6 @@
 package ru.practicum.gateway.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewItemRequest {
-    private String text;
+    @NotNull
+    private String description;
 }

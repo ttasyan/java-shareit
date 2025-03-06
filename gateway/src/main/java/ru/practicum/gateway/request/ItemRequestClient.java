@@ -22,8 +22,9 @@ public class ItemRequestClient extends BaseClient {
                         .build()
         );
     }
-    public ResponseEntity<Object> addRequest( long userId,
-                                              NewItemRequest request) {
+
+    public ResponseEntity<Object> addRequest(long userId,
+                                             NewItemRequest request) {
         return post("", userId, request);
     }
 
@@ -31,11 +32,11 @@ public class ItemRequestClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getAll( long userId) {
-        return get("/all",userId);
+    public ResponseEntity<Object> getAll(long userId) {
+        return get("/all", userId);
     }
 
-    public ResponseEntity<Object> findById( long requestId) {
+    public ResponseEntity<Object> findById(long requestId) {
         return get("/" + requestId);
     }
 }

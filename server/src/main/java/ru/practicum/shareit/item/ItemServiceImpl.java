@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
                             }
                     );
         }
-        return ItemMapper.toItemDtoWithComments(item, commentRepository.findAll());
+        return ItemMapper.toItemDtoWithComments(item, commentRepository.findByItemId(item.getId()));
 
     }
 

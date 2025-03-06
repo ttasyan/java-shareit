@@ -87,7 +87,7 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto.getId()), long.class))
-                .andExpect(jsonPath("$.name", is(userDto.getName().equals("fdgb"))))
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
     }
 
@@ -108,7 +108,7 @@ public class UserControllerTest {
 
     @Test
     public void deleteUser() throws Exception {
-       doNothing().when(userService.getUserById(anyLong()));
+        doNothing().when(userService).deleteUser(anyLong());
         mvc.perform(delete("/users/{userId}", userDto.getId())
                         .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)

@@ -15,25 +15,26 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/items")
 public class ItemController {
     private final ItemClient client;
+
     @GetMapping
     public ResponseEntity<Object> getAllItems(@RequestHeader("X-Sharer-User-Id") long userId) {
         return client.getAllItems(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object>  getItemById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
+    public ResponseEntity<Object> getItemById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         return client.getItemById(userId, itemId);
     }
 
     @PostMapping
-    public ResponseEntity<Object>  addItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @Valid @RequestBody NewItemRequest request) {
+    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") long userId,
+                                          @Valid @RequestBody NewItemRequest request) {
         return client.addItem(userId, request);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object>  updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId,
-                              @Valid @RequestBody UpdateItemRequest request) {
+    public ResponseEntity<Object> updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId,
+                                             @Valid @RequestBody UpdateItemRequest request) {
         return client.updateItem(userId, itemId, request);
     }
 
@@ -43,8 +44,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object>  comment(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId,
-                              @RequestBody NewCommentRequest request) {
+    public ResponseEntity<Object> comment(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId,
+                                          @RequestBody NewCommentRequest request) {
         return client.comment(userId, itemId, request);
     }
 }

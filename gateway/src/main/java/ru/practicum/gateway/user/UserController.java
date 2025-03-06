@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/users")
 public class UserController {
     private final UserClient client;
+
     @PostMapping
     public ResponseEntity<Object> addUser(@Valid @RequestBody UserDto userDto) {
         return client.addUser(userDto);
