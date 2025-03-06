@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest(classes = ShareItApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class UserServiceImplTest {
     private final UserService service;
+
     @Test
     void saveUser() {
         UserDto userDto = new UserDto(1, "Пётр", "fjk@mail.ru");
