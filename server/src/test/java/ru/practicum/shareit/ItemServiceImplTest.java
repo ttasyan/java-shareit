@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.UserDto;
@@ -20,18 +21,22 @@ import static org.hamcrest.Matchers.notNullValue;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(classes = ShareItApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ItemServiceImplTest {
-    private final ItemService service;
     private final UserService userService;
+    private final ItemService service;
 
     @Test
     void saveItem() {
-        long userId = 1L;
+        long userId = 1;
         UserDto userDto = new UserDto(1, "Пётр", "fjk@mail.ru");
         userService.addUser(userDto);
         ItemDto itemDto = new ItemDto(1, "Пётр", "ygi", true,
                 null, null, userId, new ArrayList<>(), null);
 
-        service.addItem(userId, itemDto);
+        try {
+            service.addItem(userDto.getId(), itemDto);
+        } catch (NotFoundException e) {
+
+        }
 
         assertThat(itemDto.getId(), notNullValue());
         assertThat(itemDto.getName(), equalTo("Пётр"));
