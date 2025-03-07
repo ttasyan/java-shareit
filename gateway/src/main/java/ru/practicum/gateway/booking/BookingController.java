@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Controller
@@ -47,5 +48,11 @@ public class BookingController {
     public ResponseEntity<Object> updateBookingRequest(@RequestHeader("X-Sharer-User-Id") long userId,
                                                        @PathVariable long bookingId, @RequestParam boolean approved) {
         return bookingClient.updateBookingRequest(userId, bookingId, approved);
+    }
+
+    @GetMapping("/owner")
+    public ResponseEntity<Object> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
+                                               @RequestParam(defaultValue = "ALL") String state) {
+        return bookingClient.getBookingsByOwner(userId, state);
     }
 }
