@@ -10,6 +10,8 @@ import ru.practicum.shareit.booking.NewBookingRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,14 +24,16 @@ import static org.hamcrest.Matchers.notNullValue;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest(classes = ShareItApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-
 public class BookingServiceImplTest {
     private final BookingService service;
     private final ItemService itemService;
+    private final UserRepository userRepository;
+
 
     @Test
     void saveBooking() {
         long userId = 1L;
+        userRepository.save(new User(userId, "f", "f@mail.ru"));
         ItemDto itemDto = new ItemDto(1, "Пётр", "ygi", true,
                 null, null, userId, new ArrayList<>(), null);
         itemService.addItem(userId, itemDto);
