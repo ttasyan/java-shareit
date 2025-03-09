@@ -10,8 +10,6 @@ import ru.practicum.shareit.booking.NewBookingRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.UserDto;
-import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,14 +25,11 @@ import static org.hamcrest.Matchers.notNullValue;
 
 public class BookingServiceImplTest {
     private final BookingService service;
-    private final UserService userService;
     private final ItemService itemService;
 
     @Test
     void saveBooking() {
         long userId = 1L;
-        UserDto userDto = new UserDto(1, "Пётр", "fjk@mail.ru");
-        userService.addUser(userDto);
         ItemDto itemDto = new ItemDto(1, "Пётр", "ygi", true,
                 null, null, userId, new ArrayList<>(), null);
         itemService.addItem(userId, itemDto);
