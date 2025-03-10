@@ -32,7 +32,7 @@ public class BookingServiceImplTest {
         Booking booking2 = repository.save(booking1);
 
         assertThat(booking2.getId(), notNullValue());
-        assertThat(booking2.getBooker().getId(), equalTo(userId));
+        assertThat(booking2.getBooker().getId(), equalTo(user.getId()));
         assertThat(booking2.getStatus().toString(), equalTo("WAITING"));
 
     }
