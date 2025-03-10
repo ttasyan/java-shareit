@@ -3,10 +3,10 @@ package ru.practicum.shareit;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.UserDto;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,19 +15,19 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@SpringBootTest(classes = ShareItApp.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@DataJpaTest
 public class UserServiceImplTest {
-    private final UserService service;
+    private final UserRepository repository;
 
     @Test
     void saveUser() {
-        UserDto userDto = new UserDto(1, "Пётр", "fjk@mail.ru");
+        User user = new User(1, "Пётр", "fjk@mail.ru");
 
-        service.addUser(userDto);
+        repository.save(user);
 
-        assertThat(userDto.getId(), notNullValue());
-        assertThat(userDto.getName(), equalTo("Пётр"));
-        assertThat(userDto.getEmail(), equalTo("fjk@mail.ru"));
+        assertThat(user.getId(), notNullValue());
+        assertThat(user.getName(), equalTo("Пётр"));
+        assertThat(user.getEmail(), equalTo("fjk@mail.ru"));
 
     }
 }
