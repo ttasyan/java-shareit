@@ -27,12 +27,12 @@ public class ItemRequestServiceImplTest {
     void saveItemRequest() {
         long userId = 1L;
         User user = userRepository.save(new User(userId, "f", "f@mail.ru"));
-        ItemRequest itemRequest1 = new ItemRequest(1, "des", user, LocalDateTime.now());
+        ItemRequest itemRequest1 = new ItemRequest(2L, "des", user, LocalDateTime.now());
         ItemRequest itemRequest2 = repository.save(itemRequest1);
 
         assertThat(itemRequest2.getId(), notNullValue());
         assertThat(itemRequest2.getDescription(), equalTo("des"));
-        assertThat(itemRequest2.getRequestor().getId(), equalTo(userId));
+        assertThat(itemRequest2.getRequestor().getId(), equalTo(user.getId()));
     }
 
 }

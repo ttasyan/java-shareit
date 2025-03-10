@@ -28,12 +28,12 @@ public class BookingServiceImplTest {
     void saveBooking() {
         long userId = 1L;
         User user = userRepository.save(new User(userId, "f", "f@mail.ru"));
-        Booking booking1 = new Booking(1, null, null, null, user, Booking.StatusType.WAITING);
+        Booking booking1 = new Booking(2L, null, null, null, user, Booking.StatusType.WAITING);
         Booking booking2 = repository.save(booking1);
 
         assertThat(booking2.getId(), notNullValue());
         assertThat(booking2.getBooker().getId(), equalTo(userId));
-        assertThat(booking2.getStatus(), equalTo("WAITING"));
+        assertThat(booking2.getStatus().toString(), equalTo("WAITING"));
 
     }
 }
